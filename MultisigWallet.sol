@@ -6,9 +6,9 @@ pragma solidity >=0.8.2 <0.9.0;
 contract MultisigWallet {
 
     //Variables
-    address[] public owners; //Almacenamiento de los owners de la cartera(address))
-    mapping (address=>bool) isOwner; //mapping para saber si la direccion que metamos es un owner o no
-    uint public numConfirmations; //Necesitamos un numero entero para saber las confirmaciones hacen falta para que una transaccion se lleve a cabo
+    address[] public owners; // Storage of wallet owners (addresses)  
+    mapping (address=>bool) isOwner; // Mapping to check if an address is an owner  
+    uint public numConfirmations; // We need an integer to determine the required confirmations for a transaction to be executed  
 
     //Events
     event Deposit(address indexed sender, uint amount, uint balance);
@@ -26,12 +26,12 @@ contract MultisigWallet {
         uint numberConfirmations;
     }
 
-    mapping (uint => mapping (address=>bool)) public isConfirmed; //Mapping para almacenar el identificador de la transaccion(uint), persona que inicia la transaccion(address), y si esta confirmada la transaccion o no (bool)
-    Transaction [] public transactions; //Array para almacenar todas las transaciones que vayamos a hacer con nuestra cartera
+    mapping (uint => mapping (address=>bool)) public isConfirmed; // Mapping to store the transaction ID (uint), the initiator (address), and whether the transaction is confirmed (bool)  
+    Transaction [] public transactions; // Array to store all transactions made with the wallet  
 
     //Modifiers
     modifier onlyOwner{
-        require(isOwner[msg.sender], "You are not owner"); //Ya que no podemos poner 1 propietario, tenemos que comprobar que el msg.sender es owner o no
+        require(isOwner[msg.sender], "You are not owner"); // Since we cannot have only one owner, we must check whether msg.sender is an owner  
         _;
     }
 
@@ -69,7 +69,7 @@ contract MultisigWallet {
         numConfirmations = _numConfirmations;
     }
 
-    //Funcion automatica
+    // Automatic function to receive Ether  
     receive () external payable {
         emit Deposit(msg.sender, msg.value, address(this).balance);
     }
@@ -86,8 +86,8 @@ contract MultisigWallet {
     }
 
     function confirmTx (uint _txID) public onlyOwner txExists(_txID) notConfirmed(_txID) notExecuted(_txID) {
-        Transaction storage transaction = transactions[_txID]; //Almacenamos las peticiones con el storage
-        transaction.numberConfirmations+=1; //Sumamos una confirmacion a la transaccion
+        Transaction storage transaction = transactions[_txID]; // Stores transaction requests in storage
+        transaction.numberConfirmations+=1; // Increases the transaction confirmation count 
 
         isConfirmed [_txID] [msg.sender] = true;
 
