@@ -59,8 +59,8 @@ contract MultisigWallet {
         for (uint i = 0; i< _owners.length;i++){
             address owner = _owners[i];
 
-            require (owner != address(0), "invalid owner"); //Comprobamos que el owner no sea la direccion 0
-            require (!isOwner[owner], "owner is not unique"); //Comprobamos que no hayamos repetido propietario
+            require (owner != address(0), "invalid owner"); // Check the owner address is not the zero address  
+            require (!isOwner[owner], "owner is not unique"); // Check there are no duplicate owners  
 
             isOwner[owner] = true;
             owners.push(owner);
